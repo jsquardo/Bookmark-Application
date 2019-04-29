@@ -1,11 +1,20 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import ReactDOM from "react-dom";
+import LinkCard from "./components/LinkCard";
 import "./main.css";
 
 const App = () => {
-  const linkImageStyle = {
-    backgroundImage:
-      "url('https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png')"
+  const [cardData, setCardData] = useState([
+    { linkName: "Link", linkHref: "https://github.com" }
+  ]);
+
+  const [newCard, setNewCard] = useState({ linkName: "", linkHref: "" });
+
+  const dispatchCardSet = payload => {
+    let oldArray = cardData;
+    let newArray = [...oldArray, payload];
+    setCardData(newArray);
+    setNewCard({ linkHref: "", linkName: "" });
   };
 
   return (
@@ -24,13 +33,17 @@ const App = () => {
       <main>
         <div className="leftContent">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1200px-React-icon.svg.png" />
-          <form>
+          <form onSubmit={e => e.preventDefault()}>
             <h2 className="formTitle">Add a bookmark</h2>
             <div>
-              <label for="linkTitle" className="formLabel">
+              <label htmlFor="linkTitle" className="formLabel">
                 Enter a bookmark name
               </label>
               <input
+                value={newCard.linkName}
+                onChange={e =>
+                  setNewCard({ ...newCard, linkName: e.currentTarget.value })
+                }
                 type="text"
                 name="linkTitle"
                 minLength="1"
@@ -39,10 +52,14 @@ const App = () => {
               />
             </div>
             <div>
-              <label for="linkHref" className="formLabel">
+              <label htmlFor="linkHref" className="formLabel">
                 Enter a bookmark name
               </label>
               <input
+                value={newCard.linkHref}
+                onChange={e =>
+                  setNewCard({ ...newCard, linkHref: e.currentTarget.value })
+                }
                 type="text"
                 name="linkHref"
                 minLength="7"
@@ -50,18 +67,11 @@ const App = () => {
                 placeholder="http://www.example.com"
               />
             </div>
-            <button>Add</button>
+            <button onClick={() => dispatchCardSet(newCard)}>Add</button>
           </form>
         </div>
         <div className="rightContent">
-          <div className="linkCard">
-            <div className="linkCardImage" style={linkImageStyle} />
-            <div className="linkCardLink">
-              <h2>
-                <a href="#">My Link!</a>
-              </h2>
-            </div>
-          </div>
+          <LinkCard cards={cardData} />
         </div>
       </main>
     </Fragment>
